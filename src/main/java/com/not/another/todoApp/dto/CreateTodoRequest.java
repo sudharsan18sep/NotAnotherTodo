@@ -13,10 +13,10 @@ public class CreateTodoRequest {
 
 
 
-    @NotBlank
-    @Size(max = 50)
+    @NotBlank(message = "Title cannot be blank")
+    @Size(max = 50, message = "Maximum title size cannot be more than 50")
     private String title;
-    @Size(max = 100)
+    @Size(max = 100, message = "Maximum description cannot be more than 100")
     private String description;
     private boolean completed;
 

@@ -18,7 +18,7 @@ public class TodoMapper {
 
     public TodoResponse toResponse(Todo todo){
         TodoResponse todoResponse = new TodoResponse();
-        todoResponse.setId(todo.getId());
+        todoResponse.setId(todo.getid());
         todoResponse.setTitle(todo.getTitle());
         todoResponse.setDescription(todo.getDescription());
         todoResponse.setCompleted(todo.isCompleted());

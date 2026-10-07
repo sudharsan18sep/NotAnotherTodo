@@ -10,15 +10,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Document(collection = "Todo")
+
 public class Todo {
     @Id
-    private String Id;
+    private String id;
     @NotBlank
     @Size(max =50 )
     private String title;
     @Size(max =100 )
     private String description;
-    private boolean completed;
+    private Boolean completed;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDate deadline;
@@ -71,11 +72,11 @@ public class Todo {
         this.deadline = deadline;
     }
 
-    public String getId() {
-        return Id;
+    public String getid() {
+        return id;
     }
 
-    public void setId(String id) {
-        Id = id;
+    public void setid(String id) {
+        id = id;
     }
 }

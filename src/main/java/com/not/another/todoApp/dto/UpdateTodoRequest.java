@@ -7,12 +7,12 @@ import java.time.LocalDate;
 
 public class UpdateTodoRequest {
     private String Id;
-    @NotBlank
-    @Size(max = 50)
+
+    @Size(max = 50 , message = "Maximum title size cannot be more than 50")
     private String title;
-    @Size(max = 100)
+    @Size(max = 100 , message = "Maximum Description size cannot be more than 100")
     private String description;
-    private boolean completed;
+    private Boolean completed;
 
     private LocalDate deadline;
 
@@ -32,11 +32,11 @@ public class UpdateTodoRequest {
         this.description = description;
     }
 
-    public boolean isCompleted() {
+    public Boolean isCompleted() {
         return completed;
     }
 
-    public void setCompleted(boolean completed) {
+    public void setCompleted(Boolean completed) {
         this.completed = completed;
     }
 
