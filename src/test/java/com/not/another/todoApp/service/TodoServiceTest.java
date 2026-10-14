@@ -4,60 +4,68 @@ import com.not.another.todoApp.dto.CreateTodoRequest;
 import com.not.another.todoApp.dto.TodoResponse;
 import com.not.another.todoApp.entity.Todo;
 import com.not.another.todoApp.mapper.TodoMapper;
+import com.not.another.todoApp.repository.TodoRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class) //initialises the Mockito annotations for each test.
 public class TodoServiceTest {
     //JUnit finds these methods and runs them automatically
-    @Test
-    void shouldMapCreateTodoToTodo(){
 
-        //Arrange : Prepare the input for the test
-        CreateTodoRequest createTodoRequest = new CreateTodoRequest();
+    @Mock //
+    private TodoMapper todoMapper;
 
-        createTodoRequest.setTitle("CreateTodo test");
-        createTodoRequest.setDescription("toEntity Mapper Testing");
-        createTodoRequest.setDeadline(LocalDate.of(2026,10,07));
+    @Mock //creates a fake dependency. The repository won't connect to MongoDB
+    private TodoRepository todoRepository;
 
-        //Act: call the testing function
-
-        TodoMapper todoMapper = new TodoMapper();
-
-        Todo todo = todoMapper.toEntity(createTodoRequest);
-
-        //Assert: check the output
-
-        assertEquals("CreateTodo test",todo.getTitle());
-        assertEquals("toEntity Mapper Testing", todo.getDescription());
-        assertEquals(LocalDate.of(2026,10,07), todo.getDeadline());
-
-    }
+    @InjectMocks  //creates your real TodoServiceImpl and injects the mocked dependencies.
+    private TodoServiceImpl todoService;
 
     @Test
-    void shouldMapTodotoToResponse(){
+    void createTodo_shouldSaveTodoAndReturnResponse(){
+
         //Arrange
-
+        CreateTodoRequest createTodoRequest = new CreateTodoRequest();
+        createTodoRequest.setTitle("Unit Testing");
+        createTodoRequest.setDescription("Using Mockito");
         Todo todo = new Todo();
-        todo.setTitle("ToResponse Testing");
-        todo.setDescription("ToDo to ToResponse");
-        todo.setCompleted(false);
+        //to check if service class sets it to false when creating
+        todo.setCompleted(true);
 
-        //act
+        TodoResponse expectedTodoResponse = new TodoResponse();
 
-        TodoMapper todoMapper = new TodoMapper();
+        when(todoMapper.toEntity(createTodoRequest)).thenReturn(todo);
+        when(todoRepository.save(todo)).thenReturn(todo);
+        when(todoMapper.toResponse(todo)).thenReturn(expectedTodoResponse);
 
-        TodoResponse todoResponse = todoMapper.toResponse(todo);
+        //ACT
 
-        //Assert
+        TodoResponse actualResponse = todoService.createTodo(createTodoRequest);
 
-        assertEquals("ToResponse Testing", todoResponse.getTitle());
-        assertEquals("ToDo to ToResponse", todoResponse.getDescription());
-        assertFalse(todoResponse.isCompleted());
+        assertSame(expectedTodoResponse, actualResponse);
+        assertNotNull(todo.getCreatedAt());
+        assertFalse(todo.isCompleted());
+
+        //Check whether a mock method was called
+        verify(todoMapper).toEntity(createTodoRequest);
+        verify(todoMapper).toResponse(todo);
+        verify(todoRepository).save(todo);
+
+
 
     }
+
+
+
 
 
 
