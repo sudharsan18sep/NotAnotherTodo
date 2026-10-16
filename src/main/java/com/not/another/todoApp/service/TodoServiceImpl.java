@@ -39,6 +39,9 @@ public class TodoServiceImpl implements TodoService{
     public List<TodoResponse> getAllTodos() {
 
         List<Todo> todoList = todoRepository.findAll();
+//        if(todoList.isEmpty()){
+//
+//        }
        return todoList.stream().map(x -> todoMapper.toResponse(x)).toList();
 
 
