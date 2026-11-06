@@ -3,6 +3,8 @@ package com.not.another.todoApp.service;
 import com.not.another.todoApp.dto.CreateTodoRequest;
 import com.not.another.todoApp.dto.TodoResponse;
 import com.not.another.todoApp.entity.Todo;
+import com.not.another.todoApp.exception.DatabaseError;
+import com.not.another.todoApp.exception.TodoIsEmptyException;
 import com.not.another.todoApp.mapper.TodoMapper;
 import com.not.another.todoApp.repository.TodoRepository;
 import org.junit.jupiter.api.Test;
@@ -121,23 +123,24 @@ public class TodoServiceTest {
 
     }
 
-    //@Test
-    //void getAllTodos_WhenRepositoryThrowsException_ShouldPropagateException() {
-    //
-    //    // Arrange
-    //    when(todoRepository.findAll())
-    //            .thenThrow(new RuntimeException("Database error"));
-    //
-    //    // Act & Assert
-    //    RuntimeException exception = assertThrows(
-    //            RuntimeException.class,
-    //            () -> todoService.getAllTodos()
-    //    );
-    //
-    //    assertEquals("Database error", exception.getMessage());
-    //
-    //    verify(todoRepository).findAll();
-    //}
+    @Test
+    void getAllTodos_WhenRepositoryThrowsException_ShouldPropagateException() {
+
+        // Arrange
+        when(todoRepository.findAll())
+                .thenThrow(new DatabaseError("Database error"));
+
+        // Act
+        //checks whether a specific exception is thrown and returns that exception object.
+        RuntimeException exception = assertThrows(
+                DatabaseError.class,
+                () -> todoService.getAllTodos()
+        );
+        //Assert
+        assertEquals("Database error", exception.getMessage());
+
+        verify(todoRepository).findAll();
+    }
 
     @Test
     void getTodoById_shouldReturnTodo(){
@@ -166,7 +169,14 @@ public class TodoServiceTest {
 
     @Test
     void getTodoById_forEmpty(){
+
+
         //Arrange
+        when(todoRepository.findAll()).thenThrow(new TodoIsEmptyException("Todo is empty"));
+
+        //act
+
+        java.lang.RuntimeException exception = todoService.getAllTodos();
 
     }
 

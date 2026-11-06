@@ -34,12 +34,20 @@ public class TodoServiceImpl implements TodoService{
         Todo todo = todoMapper.toEntity(createTodoRequest);
         todo.setCreatedAt(LocalDateTime.now());
         todo.setCompleted(false);
-        TodoResponse todoResponse = todoMapper.toResponse(todoRepository.save(todo));
+        TodoResponse todoResponse ;
+        try{
+            todoResponse = todoMapper.toResponse(todoRepository.save(todo));
+        }catch (DataAccessException ex){
+            throw new DatabaseError("Failed to Save create Todo");
+        }
         return todoResponse;
     }
 
     @Override
     public List<TodoResponse> getAllTodos() {
+
+        //database error
+        //isEmpty error
         List<Todo> todoList;
 
         try {
@@ -58,7 +66,15 @@ public class TodoServiceImpl implements TodoService{
 
     @Override
     public TodoResponse getTodoById(String Id) {
-        Optional<Todo> todo = todoRepository.findById(Id);
+
+        //todo not found error
+        //database error
+        Optional<Todo> todo;
+        try{
+            todo = todoRepository.findById(Id);
+        }catch (DataAccessException ex){
+            throw new DatabaseError("Database access error")
+        }
         if(todo.isPresent()){
             return todoMapper.toResponse(todo.get());
 
@@ -86,12 +102,18 @@ public class TodoServiceImpl implements TodoService{
             }
 
             if (updateTodoRequest.isCompleted() !=null) {
-                todo.setCompleted(todoToUpdate.get().isCompleted());
+                todo.setCompleted(updateTodoRequest.isCompleted());
             }
 
             todo.setUpdatedAt(LocalDateTime.now());
+             Todo savedTodo;
+            try{
+                savedTodo = todoRepository.save(todo);
+            }catch (DataAccessException ex){
+                throw new DatabaseError("Database access error");
+            }
 
-            return todoMapper.toResponse(todoRepository.save(todo));
+            return todoMapper.toResponse(savedTodo);
 
         }
         else throw new RuntimeException();
