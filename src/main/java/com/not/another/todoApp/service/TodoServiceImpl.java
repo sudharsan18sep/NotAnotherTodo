@@ -4,9 +4,12 @@ import com.not.another.todoApp.dto.CreateTodoRequest;
 import com.not.another.todoApp.dto.TodoResponse;
 import com.not.another.todoApp.dto.UpdateTodoRequest;
 import com.not.another.todoApp.entity.Todo;
+import com.not.another.todoApp.exception.DatabaseError;
+import com.not.another.todoApp.exception.TodoIsEmptyException;
 import com.not.another.todoApp.exception.TodoNotFoundException;
 import com.not.another.todoApp.mapper.TodoMapper;
 import com.not.another.todoApp.repository.TodoRepository;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -37,11 +40,17 @@ public class TodoServiceImpl implements TodoService{
 
     @Override
     public List<TodoResponse> getAllTodos() {
+        List<Todo> todoList;
 
-        List<Todo> todoList = todoRepository.findAll();
-//        if(todoList.isEmpty()){
-//
-//        }
+        try {
+            todoList = todoRepository.findAll();
+       }catch (DataAccessException ex){
+           throw new DatabaseError("Failed to retrieve Todos from database");
+       }
+        if(todoList.isEmpty()){
+            throw new TodoIsEmptyException("Todo List is empty");
+
+        }
        return todoList.stream().map(x -> todoMapper.toResponse(x)).toList();
 
 

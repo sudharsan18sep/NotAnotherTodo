@@ -16,6 +16,7 @@ import javax.swing.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -88,7 +89,7 @@ public class TodoServiceTest {
     }
 
     @Test
-    void getAllTodos_ShouldreturnTwoTodos(){
+    void getAllTodos_ShouldReturnTwoTodos(){
 
         //arrange
         List<Todo> expectedResponse = new ArrayList<>();
@@ -120,6 +121,54 @@ public class TodoServiceTest {
 
     }
 
+    //@Test
+    //void getAllTodos_WhenRepositoryThrowsException_ShouldPropagateException() {
+    //
+    //    // Arrange
+    //    when(todoRepository.findAll())
+    //            .thenThrow(new RuntimeException("Database error"));
+    //
+    //    // Act & Assert
+    //    RuntimeException exception = assertThrows(
+    //            RuntimeException.class,
+    //            () -> todoService.getAllTodos()
+    //    );
+    //
+    //    assertEquals("Database error", exception.getMessage());
+    //
+    //    verify(todoRepository).findAll();
+    //}
+
+    @Test
+    void getTodoById_shouldReturnTodo(){
+
+        //arrange
+
+        Todo todo = new Todo();
+        todo.setid("1");
+        todo.setTitle("Unit testing");
+        todo.setDescription("Description");
+
+        TodoResponse expectedResponse = new TodoResponse();
+        expectedResponse.setDescription(todo.getDescription());
+        expectedResponse.setTitle(todo.getTitle());
+        expectedResponse.setId("1");
+
+        when(todoRepository.findById("1")).thenReturn(Optional.of(todo));
+        when(todoMapper.toResponse(todo)).thenReturn(expectedResponse);
+        //act
+        TodoResponse todoResponse =todoService.getTodoById("1");
+
+        //assert
+
+        assertSame(expectedResponse, todoResponse);
+    }
+
+    @Test
+    void getTodoById_forEmpty(){
+        //Arrange
+
+    }
 
 
 
